@@ -8,6 +8,7 @@ export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [linkedin, setLinkedin] = useState('');
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
@@ -23,6 +24,7 @@ export default function RegisterScreen({ navigation }) {
         uid: user.uid,
         name,
         email,
+        linkedin: linkedin.trim(),
         createdAt: serverTimestamp(),
       });
 
@@ -43,6 +45,7 @@ export default function RegisterScreen({ navigation }) {
       <TextInput placeholder="Name" value={name} onChangeText={setName} style={styles.input} placeholderTextColor="#A9A9A9" />
       <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} placeholderTextColor="#A9A9A9" />
       <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry style={styles.input} placeholderTextColor="#A9A9A9" />
+      <TextInput placeholder="LinkedIn Profile URL" value={linkedin} onChangeText={setLinkedin} style={styles.input} placeholderTextColor="#A9A9A9" />
       <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
         <Text style={styles.registerButtonText}>Register</Text>
       </TouchableOpacity>

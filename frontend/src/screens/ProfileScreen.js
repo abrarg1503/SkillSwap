@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { auth, db } from '../services/firebase';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
@@ -9,6 +9,25 @@ export default function ProfileScreen() {
   const [profile, setProfile] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const formatLinkedInUrl = (url) => {
+    if (!url) return null;
+    return url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
+  };
+
+  const handleOpenLinkedIn = async () => {
+    const url = formatLinkedInUrl(profile?.linkedin);
+    if (!url) {
+      Alert.alert('LinkedIn not available', 'Please add your LinkedIn profile in registration.');
+      return;
+    }
+
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      Alert.alert('Unable to open LinkedIn', 'Please check the LinkedIn URL and try again.');
+    }
+  };
 
   useEffect(() => {
     loadProfileData();
@@ -79,6 +98,13 @@ export default function ProfileScreen() {
         />
         <Text style={styles.name}>{profile?.name || 'User'}</Text>
         <Text style={styles.email}>{profile?.email || auth.currentUser?.email}</Text>
+        {profile?.linkedin ? (
+          <TouchableOpacity style={styles.linkedinButton} onPress={handleOpenLinkedIn}>
+            <Text style={styles.linkedinText}>View LinkedIn Profile</Text>
+          </TouchableOpacity>
+        ) : (
+          <Text style={styles.noData}>Add your LinkedIn URL during registration to enable the link.</Text>
+        )}
         <Text style={styles.points}>⭐ {profile?.points || 0} Points</Text>
       </View>
 
@@ -201,6 +227,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
+  },
+  linkedinButton: {
+    backgroundColor: '#0C4A6E',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  linkedinText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   courseSubtitle: {
     color: '#A7A7BC',
